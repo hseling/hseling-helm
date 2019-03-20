@@ -1,0 +1,62 @@
+replicaCount: 1
+
+images:
+  API:
+    repository: hseling/hseling-api-template
+    tag: latest
+    pullPolicy: Always
+  Web:
+    repository: hseling/hseling-web-template
+    tag: latest
+    pullPolicy: Always
+  WebDB:
+    repository: hseling/hseling-web-template
+    tag: db
+    pullPolicy: Always
+  Minio:
+    repository: minio/minio
+    tag: latest
+    pullPolicy: Always
+  Mysql:
+    repository: mysql
+    tag: latest
+    pullPolicy: Always
+  Redis:
+    repository: redis
+    tag: latest
+    pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: ""
+      paths: ["/"]
+
+
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+storageClass: ""
+
+secrets:
+  minioAccessKey: "aHNlbGluZy1wYXNzd29yZA=="
+  minioSecretKey: "aHNlbGluZy1wYXNzd29yZA=="
+  mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
+  postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="

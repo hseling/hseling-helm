@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hseling.fullname" . }}-redis
+  labels:
+    app: redis
+    app.kubernetes.io/name: {{ include "hseling.name" . }}-redis
+    helm.sh/chart: {{ include "hseling.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "hseling.name" . }}-redis
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "hseling.name" . }}-redis
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ include "hseling.fullname" . }}-redis
+          image: "{{ .Values.images.Redis.repository }}:{{ .Values.images.Redis.tag }}"
+          imagePullPolicy: {{ .Values.images.Redis.pullPolicy }}
+          envFrom:
+          - secretRef:
+              name: {{ include "hseling.name" . }}-secret
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          resources: {}
+          securityContext:
+            capabilities: {}
+            procMount: Default
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
