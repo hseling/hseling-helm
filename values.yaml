@@ -56,7 +56,7 @@ affinity: {}
 storageClass: ""
 
 secrets:
-  minioAccessKey: "aHNlbGluZy1wYXNzd29yZA=="
-  minioSecretKey: "aHNlbGluZy1wYXNzd29yZA=="
+  minioAccessKey: ""
+  minioSecretKey: ""
   mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
   postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="

@@ -3,32 +3,6 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-static
-  labels:
-    app.kubernetes.io/name: {{ include "hseling.name" . }}
-    helm.sh/chart: {{ include "hseling.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /static/$1
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          - path: /static/?(.*)
-            backend:
-              serviceName: {{ $fullName }}-web
-              servicePort: http
-  {{- end }}
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
   name: {{ $fullName }}-minio
   labels:
     app.kubernetes.io/name: {{ include "hseling.name" . }}
@@ -88,7 +62,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /web/$1
+    nginx.ingress.kubernetes.io/app-root: /web
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -97,7 +71,7 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          - path: /?(.*)
+          - path: /
             backend:
               serviceName: {{ $fullName }}-web
               servicePort: http
