@@ -60,3 +60,7 @@ secrets:
   minioSecretKey: ""
   mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
   postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="
+
+volumeName: deployment-volume
+mountPath: /data
+storageClass: csi-cephfs-sc

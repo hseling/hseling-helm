@@ -7,14 +7,14 @@ PROJECT_NAME=$1
 FULL_PROJECT_NAME=hseling-$PROJECT_NAME
 PROJECT_NAMESPACE=$FULL_PROJECT_NAME
 
-PROJECT_EXISTS=$(helm list | grep $FULL_PROJECT_NAME | cut -f 1)
+PROJECT_EXISTS=$(helm list -n $PROJECT_NAMESPACE | grep $FULL_PROJECT_NAME | cut -f 1)
 
 MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-$(echo -n "minio" | base64 -w 0)}
 MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-$(echo -n "minio-$FULL_PROJECT_NAME" | base64 -w 0)}
 
 DOMAIN=${DOMAIN:-hseling}
 
-BLOCK_STORAGE=${BLOCK_STORAGE:-standard} # For DigitalOcean: do-block-storage
+BLOCK_STORAGE=${BLOCK_STORAGE:-csi-cephfs-sc} # For DigitalOcean: do-block-storage
 
 IMAGE_API="hseling/hseling-api-$PROJECT_NAME"
 IMAGE_WEB="hseling/hseling-web-$PROJECT_NAME"
@@ -47,9 +47,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # Upsert project
 if [ -z $PROJECT_EXISTS ]; then
-  helm install $DIR --namespace=$PROJECT_NAMESPACE \
-       --set $VALUES
+  helm install $FULL_PROJECT_NAME $DIR --namespace $PROJECT_NAMESPACE --set $VALUES
 else
-  helm upgrade $PROJECT_EXISTS $DIR --namespace=$PROJECT_NAMESPACE \
-       --set $VALUES
+  helm upgrade $FULL_PROJECT_NAME $DIR --namespace $PROJECT_NAMESPACE --set $VALUES
 fi
