@@ -41,6 +41,9 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "hseling.name" . }}-deployment-volume
+              mountPath: {{ .Values.mountPath }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -53,3 +56,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: {{ include "hseling.name" . }}-deployment-volume
+          persistentVolumeClaim:
+            claimName: {{ include "hseling.name" . }}-pvc
