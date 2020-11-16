@@ -13,10 +13,6 @@ images:
     repository: hseling/hseling-web-template
     tag: db
     pullPolicy: Always
-  Minio:
-    repository: minio/minio
-    tag: latest
-    pullPolicy: Always
   Mysql:
     repository: mysql
     tag: latest
@@ -56,11 +52,10 @@ affinity: {}
 storageClass: ""
 
 secrets:
-  minioAccessKey: ""
-  minioSecretKey: ""
   mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
   postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="
 
-volumeName: deployment-volume
 mountPath: /data
-storageClass: csi-cephfs-sc
+
+storage:
+  space: 1Gi
