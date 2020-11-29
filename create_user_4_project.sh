@@ -2,7 +2,7 @@
 
 if [ $# -eq 1 ]; then
     sudo adduser "$1"
-    echo "umask 027" >> "/home/$1/.bashrc"
+    echo "umask 027" | sudo tee -a "/home/$1/.bashrc"
     sudo passwd "$1"
     sudo mkdir -p "/data/$1"
     sudo ln -s "/data/$1" "/home/$1/project"
