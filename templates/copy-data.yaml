@@ -51,25 +51,30 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "hseling.name" . }}-app-pvc
         - name: {{ include "hseling.name" . }}-app-prod-volume
-          path: "{{ .Values.localPath }}/app/prod"
-          type: Directory
+          hostPath:
+            path: "{{ .Values.localPath }}/app/prod"
+            type: Directory
         - name: {{ include "hseling.name" . }}-app-backup-volume
-          path: "{{ .Values.localPath }}/app/backup"
-          type: Directory
+          hostPath:
+            path: "{{ .Values.localPath }}/app/backup"
+            type: Directory
         {{- if .Values.images.Mysql.repository }}
         - name: {{ include "hseling.name" . }}-mysql-volume
           persistentVolumeClaim:
             claimName: {{ include "hseling.name" . }}-mysql-pvc
         - name: {{ include "hseling.name" . }}-mysql-prod-volume
-          path: "{{ .Values.localPath }}/mysql/prod"
-          type: Directory
+          hostPath:
+            path: "{{ .Values.localPath }}/mysql/prod"
+            type: Directory
         - name: {{ include "hseling.name" . }}-mysql-backup-volume
-          path: "{{ .Values.localPath }}/mysql/backup"
-          type: Directory
+          hostPath:
+            path: "{{ .Values.localPath }}/mysql/backup"
+            type: Directory
         {{- end }}
         - name: {{ include "hseling.name" . }}-instructions-volume
-          path: "{{ .Values.localPath }}/helm"
-          type: Directory
+          hostPath:
+            path: "{{ .Values.localPath }}/helm"
+            type: Directory
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/ingress: ingress
