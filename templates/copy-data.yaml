@@ -20,7 +20,7 @@ spec:
     metadata:
       name: "{{ .Release.Name }}"
       labels:
-  app.kubernetes.io/name: {{ include "hseling.name" . }}-api
+        app.kubernetes.io/name: {{ include "hseling.name" . }}-api
         app.kubernetes.io/instance: {{ .Release.Name }}
         helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     spec:
