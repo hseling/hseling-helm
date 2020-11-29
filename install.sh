@@ -20,7 +20,7 @@ DOMAIN="${DOMAIN:-hseling}"
 IMAGE_API="hseling/hseling-api-${PROJECT_NAME}"
 IMAGE_WEB="hseling/hseling-web-${PROJECT_NAME}"
 
-VALUES="${VALUES},nameOverride=${FULL_PROJECT_NAME}"
+VALUES="nameOverride=${FULL_PROJECT_NAME}"
 VALUES="${VALUES},images.API.repository=${IMAGE_API}"
 VALUES="${VALUES},images.Web.repository=${IMAGE_WEB}"
 VALUES="${VALUES},ingress.enabled=true,ingress.hosts.0.host=${PROJECT_NAME}.${DOMAIN},ingress.hosts.0.paths=/"
