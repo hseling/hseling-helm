@@ -10,15 +10,18 @@ images:
     tag: latest
     pullPolicy: Always
   WebDB:
-    repository: hseling/hseling-web-template
+    repository: ""
+    # repository: hseling/hseling-web-template
     tag: db
     pullPolicy: Always
   Mysql:
-    repository: mysql
+    repository: ""
+    # repository: mysql
     tag: latest
     pullPolicy: Always
   Redis:
-    repository: redis
+    repository: ""
+    # repository: redis
     tag: latest
     pullPolicy: Always
 
@@ -50,12 +53,16 @@ tolerations: []
 affinity: {}
 
 storageClass: ""
+hostPath: ""
 
 secrets:
   mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
   postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="
 
 mountPath: /data
+localPath: ""
 
 storage:
-  space: 1Gi
+  appSpace: 1Gi
+  mysqlSpace: 1Gi
+  redisSpace: 1Gi

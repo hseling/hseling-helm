@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hseling.fullname" . }}-web 
+  name: {{ include "hseling.fullname" . }}-web
   labels:
     app.kubernetes.io/name: {{ include "hseling.name" . }}-web
     helm.sh/chart: {{ include "hseling.chart" . }}

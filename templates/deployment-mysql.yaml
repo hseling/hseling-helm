@@ -1,3 +1,4 @@
+{{- if .Values.images.Mysql.repository }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,6 +43,9 @@ spec:
           securityContext:
             capabilities: {}
             procMount: Default
+          volumeMounts:
+           - name: {{ include "hseling.name" . }}-mysql-volume
+             mountPath: "/var/lib/mysql"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -54,3 +58,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: {{ include "hseling.name" . }}-mysql-volume
+        {{- if .Values.storageClass }}
+          persistentVolumeClaim:
+            claimName: {{ include "hseling.name" . }}-mysql-pvc
+        {{- end }}
+        {{- if .Values.hostPath }}
+          hostPath:
+            path: "{{ .Values.localPath }}/mysql"
+            type: Directory
+        {{- end }}
+{{- end }}

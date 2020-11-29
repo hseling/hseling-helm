@@ -1,7 +1,8 @@
+{{- if .Values.images.WebDB.repository }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hseling.fullname" . }}-webdb 
+  name: {{ include "hseling.fullname" . }}-webdb
   labels:
     app.kubernetes.io/name: {{ include "hseling.name" . }}-webdb
     helm.sh/chart: {{ include "hseling.chart" . }}
@@ -17,3 +18,4 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "hseling.name" . }}-webdb
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

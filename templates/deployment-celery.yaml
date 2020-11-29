@@ -30,11 +30,9 @@ spec:
               name: {{ include "hseling.name" . }}-secret
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-        {{- if .Values.storageClass }}
           volumeMounts:
-            - name: {{ include "hseling.name" . }}-deployment-volume
+            - name: {{ include "hseling.name" . }}-app-volume
               mountPath: {{ .Values.mountPath }}
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -47,9 +45,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- if .Values.storageClass }}
       volumes:
-        - name: {{ include "hseling.name" . }}-deployment-volume
+        - name: {{ include "hseling.name" . }}-app-volume
+        {{- if .Values.storageClass }}
           persistentVolumeClaim:
-            claimName: {{ include "hseling.name" . }}-pvc
-    {{- end }}
+            claimName: {{ include "hseling.name" . }}-app-pvc
+        {{- end }}
+        {{- if .Values.hostPath }}
+          hostPath:
+            path: "{{ .Values.localPath }}/app"
+            type: Directory
+        {{- end }}

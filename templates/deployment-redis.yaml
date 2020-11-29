@@ -1,3 +1,4 @@
+{{- if .Values.images.Redis.repository }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,6 +41,9 @@ spec:
           securityContext:
             capabilities: {}
             procMount: Default
+          volumeMounts:
+           - name: {{ include "hseling.name" . }}-redis-volume
+             mountPath: "/data"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -52,3 +56,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: {{ include "hseling.name" . }}-redis-volume
+        {{- if .Values.storageClass }}
+          persistentVolumeClaim:
+            claimName: {{ include "hseling.name" . }}-redis-pvc
+        {{- end }}
+        {{- if .Values.hostPath }}
+          hostPath:
+            path: "{{ .Values.localPath }}/redis"
+            type: Directory
+        {{- end }}
+{{- end }}
