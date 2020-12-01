@@ -15,13 +15,13 @@ images:
     tag: db
     pullPolicy: Always
   Mysql:
-    repository: ""
-    # repository: mysql
+    # repository: ""
+    repository: mysql
     tag: latest
     pullPolicy: Always
   Redis:
-    repository: ""
-    # repository: redis
+    # repository: ""
+    repository: redis
     tag: latest
     pullPolicy: Always
 
