@@ -11,8 +11,8 @@ if [ $# -eq 1 ]; then
     sudo touch "/data/${FULL_PROJECT_NAME}/app/prod/rm_file.txt"
     sudo mkdir -p "/data/${FULL_PROJECT_NAME}/mysql/prod"
     sudo mkdir -p "/data/${FULL_PROJECT_NAME}/mysql/backup"
-    sudo touch "/data/${FULL_PROJECT_NAME}/mysql/prod/rm_file.txt"
     sudo ln -s "/data/${FULL_PROJECT_NAME}" "/home/${FULL_PROJECT_NAME}/project"
     sudo ln -s "/data/hseling-helm" "/data/${FULL_PROJECT_NAME}/helm"
     sudo chown -R "${FULL_PROJECT_NAME}":"hse_linghub_k8s" "/data/${FULL_PROJECT_NAME}"
+    sudo chmod o-r,o-x "/data/${FULL_PROJECT_NAME}"
 fi

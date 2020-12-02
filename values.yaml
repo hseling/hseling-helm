@@ -10,8 +10,8 @@ images:
     tag: latest
     pullPolicy: Always
   WebDB:
-    repository: ""
-    # repository: hseling/hseling-web-template
+    # repository: ""
+    repository: hseling/hseling-web-template
     tag: db
     pullPolicy: Always
   Mysql:
