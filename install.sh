@@ -30,11 +30,11 @@ if [ "x${HSELING_K8S}" == "x" ]; then
 else
     VALUES="${VALUES},storageClass=${BLOCK_STORAGE:-csi-cephfs-sc}"
 fi
-VALUES="${VALUES},localPath=${2:-/data/${FULL_PROJECT_NAME}}"
+VALUES="${VALUES},localPath=${2:-/mnt/data/${FULL_PROJECT_NAME}}"
 
 BASE_DIR=$(dirname $(readlink -e $0))
 
-sudo chown -R "${FULL_PROJECT_NAME}":"hse_linghub_k8s" "/data/${FULL_PROJECT_NAME}"
+sudo chown -R "${FULL_PROJECT_NAME}":"hse_linghub_k8s" "/mnt/data/${FULL_PROJECT_NAME}"
 
 if [ -z ${PROJECT_EXISTS} ]; then
   helm install ${FULL_PROJECT_NAME} ${BASE_DIR} --create-namespace --namespace ${PROJECT_NAMESPACE} --set ${VALUES}
