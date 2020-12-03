@@ -15,7 +15,7 @@ PROJECT_NAMESPACE="${FULL_PROJECT_NAME}"
 
 PROJECT_EXISTS="$(helm list -n ${PROJECT_NAMESPACE} | grep ${FULL_PROJECT_NAME} | cut -f 1)"
 
-DOMAIN="${DOMAIN:-hseling}"
+DOMAIN="${DOMAIN:-linghub.net}"
 
 IMAGE_API="hseling/hseling-api-${PROJECT_NAME}"
 IMAGE_WEB="hseling/hseling-web-${PROJECT_NAME}"

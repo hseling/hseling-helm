@@ -64,5 +64,5 @@ localPath: ""
 
 storage:
   appSpace: 1Gi
-  mysqlSpace: 1Gi
+  mysqlSpace: 50Gi
   redisSpace: 1Gi
