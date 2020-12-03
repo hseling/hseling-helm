@@ -42,7 +42,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: {{ include "hseling.name" . }}-deployment-volume
+            - name: {{ include "hseling.name" . }}-app-volume
               mountPath: {{ .Values.mountPath }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -57,6 +57,13 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
-        - name: {{ include "hseling.name" . }}-deployment-volume
+        - name: {{ include "hseling.name" . }}-app-volume
+        {{- if .Values.storageClass }}
           persistentVolumeClaim:
-            claimName: {{ include "hseling.name" . }}-pvc
+            claimName: {{ include "hseling.name" . }}-app-pvc
+        {{- end }}
+        {{- if .Values.hostPath }}
+          hostPath:
+            path: "{{ .Values.localPath }}/app"
+            type: Directory
+        {{- end }}

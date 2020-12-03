@@ -1,0 +1,87 @@
+{{- if .Values.storageClass }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "hseling.fullname" . }}-pre-install-data-add-job
+  labels:
+    app: pre-install-data-add-job
+    app.kubernetes.io/name: {{ include "hseling.name" . }}-pre-install-data-add-job
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/name: {{ include "hseling.name" . }}-api
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pre-install-data-add-job
+        image: hseling/hseling-sync:latest
+        command: ["/mnt/instructions/data_sync.sh"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: {{ include "hseling.name" . }}-app-volume
+            mountPath: /mnt/app/pv
+          - name: {{ include "hseling.name" . }}-app-prod-volume
+            mountPath: /mnt/app/prod
+          - name: {{ include "hseling.name" . }}-app-backup-volume
+            mountPath: /mnt/app/backup
+          {{- if .Values.images.Mysql.repository }}
+          - name: {{ include "hseling.name" . }}-mysql-volume
+            mountPath: /mnt/mysql/pv
+          - name: {{ include "hseling.name" . }}-mysql-prod-volume
+            mountPath: /mnt/mysql/prod
+          - name: {{ include "hseling.name" . }}-mysql-backup-volume
+            mountPath: /mnt/mysql/backup
+          {{- end }}
+          - name: {{ include "hseling.name" . }}-instructions-volume
+            mountPath: /mnt/instructions
+      volumes:
+        - name: {{ include "hseling.name" . }}-app-volume
+          persistentVolumeClaim:
+            claimName: {{ include "hseling.name" . }}-app-pvc
+        - name: {{ include "hseling.name" . }}-app-prod-volume
+          hostPath:
+            path: "{{ .Values.localPath }}/app/prod"
+            type: Directory
+        - name: {{ include "hseling.name" . }}-app-backup-volume
+          hostPath:
+            path: "{{ .Values.localPath }}/app/backup"
+            type: Directory
+        {{- if .Values.images.Mysql.repository }}
+        - name: {{ include "hseling.name" . }}-mysql-volume
+          persistentVolumeClaim:
+            claimName: {{ include "hseling.name" . }}-mysql-pvc
+        - name: {{ include "hseling.name" . }}-mysql-prod-volume
+          hostPath:
+            path: "{{ .Values.localPath }}/mysql/prod"
+            type: Directory
+        - name: {{ include "hseling.name" . }}-mysql-backup-volume
+          hostPath:
+            path: "{{ .Values.localPath }}/mysql/backup"
+            type: Directory
+        {{- end }}
+        - name: {{ include "hseling.name" . }}-instructions-volume
+          hostPath:
+            path: "{{ .Values.localPath }}/helm"
+            type: Directory
+      nodeSelector:
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/ingress: ingress
+      tolerations:
+        - key: "node-role.kubernetes.io/ingress"
+          operator: "Exists"
+          effect: "NoSchedule"
+{{- end }}

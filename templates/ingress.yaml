@@ -1,29 +1,7 @@
 {{- if .Values.ingress.enabled -}}
+
 {{- $fullName := include "hseling.fullname" . -}}
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: {{ $fullName }}-minio
-  labels:
-    app.kubernetes.io/name: {{ include "hseling.name" . }}
-    helm.sh/chart: {{ include "hseling.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          - path: /minio/
-            backend:
-              serviceName: {{ $fullName }}-minio
-              servicePort: 9000
-  {{- end }}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -50,6 +28,7 @@ spec:
               serviceName: {{ $fullName }}-api
               servicePort: http
   {{- end }}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

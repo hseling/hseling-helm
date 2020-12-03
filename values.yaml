@@ -10,18 +10,17 @@ images:
     tag: latest
     pullPolicy: Always
   WebDB:
+    # repository: ""
     repository: hseling/hseling-web-template
     tag: db
     pullPolicy: Always
-  Minio:
-    repository: minio/minio
-    tag: latest
-    pullPolicy: Always
   Mysql:
+    # repository: ""
     repository: mysql
     tag: latest
     pullPolicy: Always
   Redis:
+    # repository: ""
     repository: redis
     tag: latest
     pullPolicy: Always
@@ -54,13 +53,16 @@ tolerations: []
 affinity: {}
 
 storageClass: ""
+hostPath: ""
 
 secrets:
-  minioAccessKey: ""
-  minioSecretKey: ""
   mysqlPassword: "aHNlbGluZy1wYXNzd29yZA=="
   postgresPassword: "aHNlbGluZy1wYXNzd29yZA=="
 
-volumeName: deployment-volume
 mountPath: /data
-storageClass: csi-cephfs-sc
+localPath: ""
+
+storage:
+  appSpace: 1Gi
+  mysqlSpace: 50Gi
+  redisSpace: 1Gi

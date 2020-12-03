@@ -1,53 +1,43 @@
 #!/bin/bash
 
-PROJECT_NAME=$1
+if [ $# -le 0 ]; then
+    echo "Not enough args"
+    exit 1
+fi
+if [ $# -ge 3 ]; then
+    echo "Too much args"
+    exit 1
+fi
 
+PROJECT_NAME="$1"
+FULL_PROJECT_NAME="hseling-${PROJECT_NAME}"
+PROJECT_NAMESPACE="${FULL_PROJECT_NAME}"
 
-# Variables and defaults
-FULL_PROJECT_NAME=hseling-$PROJECT_NAME
-PROJECT_NAMESPACE=$FULL_PROJECT_NAME
+PROJECT_EXISTS="$(helm list -n ${PROJECT_NAMESPACE} | grep ${FULL_PROJECT_NAME} | cut -f 1)"
 
-PROJECT_EXISTS=$(helm list -n $PROJECT_NAMESPACE | grep $FULL_PROJECT_NAME | cut -f 1)
+DOMAIN="${DOMAIN:-linghub.net}"
 
-MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-$(echo -n "minio" | base64 -w 0)}
-MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-$(echo -n "minio-$FULL_PROJECT_NAME" | base64 -w 0)}
+IMAGE_API="hseling/hseling-api-${PROJECT_NAME}"
+IMAGE_WEB="hseling/hseling-web-${PROJECT_NAME}"
 
-DOMAIN=${DOMAIN:-hseling}
+VALUES="nameOverride=${FULL_PROJECT_NAME}"
+VALUES="${VALUES},images.API.repository=${IMAGE_API}"
+VALUES="${VALUES},images.Web.repository=${IMAGE_WEB}"
+VALUES="${VALUES},ingress.enabled=true,ingress.hosts.0.host=${PROJECT_NAME}.${DOMAIN},ingress.hosts.0.paths=/"
 
-BLOCK_STORAGE=${BLOCK_STORAGE:-csi-cephfs-sc} # For DigitalOcean: do-block-storage
-
-IMAGE_API="hseling/hseling-api-$PROJECT_NAME"
-IMAGE_WEB="hseling/hseling-web-$PROJECT_NAME"
-
-
-# Overriding default values
-VALUES_NAME_OVERRIDE="nameOverride=$FULL_PROJECT_NAME"
-VALUES_MINIO_ACCESS_KEY="secrets.minioAccessKey=$MINIO_ACCESS_KEY"
-VALUES_MINIO_SECRET_KEY="secrets.minioSecretKey=$MINIO_SECRET_KEY"
-VALUES_IMAGE_API="images.API.repository=$IMAGE_API"
-VALUES_IMAGE_WEB="images.Web.repository=$IMAGE_WEB"
-VALUES_HOST="ingress.enabled=true,ingress.hosts.0.host=${PROJECT_NAME}.${DOMAIN},ingress.hosts.0.paths=/"
-VALUES_BLOCK_STORAGE="storageClass=${BLOCK_STORAGE}"
-
-VALUES_PART_ONE="$VALUES_NAME_OVERRIDE,$VALUES_MINIO_ACCESS_KEY,$VALUES_MINIO_SECRET_KEY"
-VALUES_PART_TWO="$VALUES_IMAGE_API,$VALUES_IMAGE_WEB,$VALUES_BLOCK_STORAGE,$VALUES_HOST"
-VALUES="$VALUES_PART_ONE,$VALUES_PART_TWO"
-
-# echo $VALUES
-
-# Get script dir: https://stackoverflow.com/a/246128
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do
-  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-
-
-# Upsert project
-if [ -z $PROJECT_EXISTS ]; then
-  helm install $FULL_PROJECT_NAME $DIR --namespace $PROJECT_NAMESPACE --set $VALUES
+if [ "x${HSELING_K8S}" == "x" ]; then
+    VALUES="${VALUES},hostPath=true"
 else
-  helm upgrade $FULL_PROJECT_NAME $DIR --namespace $PROJECT_NAMESPACE --set $VALUES
+    VALUES="${VALUES},storageClass=${BLOCK_STORAGE:-csi-cephfs-sc}"
+fi
+VALUES="${VALUES},localPath=${2:-/data/${FULL_PROJECT_NAME}}"
+
+BASE_DIR=$(dirname $(readlink -e $0))
+
+sudo chown -R "${FULL_PROJECT_NAME}":"hse_linghub_k8s" "/data/${FULL_PROJECT_NAME}"
+
+if [ -z ${PROJECT_EXISTS} ]; then
+  helm install ${FULL_PROJECT_NAME} ${BASE_DIR} --create-namespace --namespace ${PROJECT_NAMESPACE} --set ${VALUES}
+else
+  helm upgrade ${FULL_PROJECT_NAME} ${BASE_DIR} --namespace ${PROJECT_NAMESPACE} --set ${VALUES}
 fi
